@@ -62,7 +62,7 @@ Theta2_grad = zeros(size(Theta2));
 %               and Theta2_grad from Part 2.
 %
 
-% Part 1.3
+% Part 1.3 (Feedforward)
 a1 = X;
 a1 = [ones(m , 1) a1]; %add a1_0
 
@@ -75,19 +75,41 @@ a3 = sigmoid(z3);
 h_theta = a3;
 
 for k = 1:num_labels
-    y_k = (y == k);
-    h_theta_k = h_theta(:, k); %this is h_θ(x^(i))_k
-    J_k = (1/m) * sum(-y_k .* log(h_theta_k) - (1-y_k) .* log(1-h_theta_k));
-    J = J + J_k;
+  y_k = (y == k);
+  h_theta_k = h_theta(:, k); %this is h_θ(x^(i))_k
+  J_k = (1/m) * sum(-y_k .* log(h_theta_k) - (1-y_k) .* log(1-h_theta_k));
+  J = J + J_k;
 end
 
-% Part 1.4
+% Part 1.4 (Feedforward - regularization)
 reg = lambda / (2*m) * (sum(sum(Theta1(:, 2:end) .^ 2)) + sum(sum(Theta2(:, 2:end) .^ 2)));
 J = J + reg;
 
-% Part 2.1
+% Part 2.3 (Backpropagation)
 
+for t = 1:m
+  % Output layer
+  for k = 1:num_labels
+    y_k = (y(t) == k);
+    delta3(k) = h_theta(t, k) - y_k;
+  end
+  
+  % Hidden layer (l=2)
+  delta2 = Theta2' * delta3' .* sigmoidGradient([1, z2(t, :)])';
+  delta2 = delta2(2:end); %remove delta for the bias unit
 
+  % Accumulate gradient
+  Theta1_grad = Theta1_grad + delta2 * a1(t, :);
+  Theta2_grad = Theta2_grad + delta3' * a2(t, :);
+end
+
+% Unregularized gradient for the NN cost function
+Theta1_grad = Theta1_grad/m;
+Theta2_grad = Theta2_grad/m;
+
+% Regularizing the gradient
+Theta1_grad(:, 2:end) += (lambda/m) * Theta1(:, 2:end);
+Theta2_grad(:, 2:end) += (lambda/m) * Theta2(:, 2:end);
 
 % -------------------------------------------------------------
 
