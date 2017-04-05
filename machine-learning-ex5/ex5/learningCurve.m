@@ -53,11 +53,19 @@ error_val   = zeros(m, 1);
 
 % ---------------------- Sample Solution ----------------------
 
+for i = 1:m
+    Xi = X(1:i, :); % X^(i)
+    yi = y(1:i); % y^(i)
+    
+    % Get θ^(i)
+    thetai = trainLinearReg(Xi, yi, lambda);
 
-
-
-
-
+    % Training error
+    error_train(i) = linearRegCostFunction(Xi, yi, thetai, 0);
+    
+    % Cross validation error
+    error_val(i) = linearRegCostFunction(Xval, yval, thetai, 0);
+end
 
 % -------------------------------------------------------------
 
