@@ -23,11 +23,27 @@ sigma = 0.3;
 %        mean(double(predictions ~= yval))
 %
 
+potential_C = [0.01 0.03 0.1 0.3 1 3 10 30];
+potential_S = [0.01 0.03 0.1 0.3 1 3 10 30];
+minimum_error = inf;
 
+for i=1:length(potential_C)
+  for j=1:length(potential_S)
+    current_C = potential_C(i);
+    current_S = potential_S(j);
+    model = svmTrain(X, y, current_C, @(x1, x2) gaussianKernel(x1, x2, current_S)); 
+    predictions = svmPredict(model, Xval);
+    predictions_error = mean(double(predictions ~= yval));
+    if (predictions_error < minimum_error)
+      minimum_error = predictions_error;
+      C = current_C;
+      S = current_S;
+    endif
+  end
+end
 
-
-
-
+% Best value found for C = 1
+% Best value fonund for sigma = 0.1
 
 % =========================================================================
 
