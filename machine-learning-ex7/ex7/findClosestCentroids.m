@@ -21,11 +21,16 @@ idx = zeros(size(X,1), 1);
 % Note: You can use a for-loop over the examples to compute this.
 %
 
-
-
-
-
-
+for i = 1:length(X)
+  max_dist = inf;
+  for j = 1:K
+    dist_xi_uj = norm(X(i, :) - centroids(j, :)); % Distance from x^i to u_j
+    if (dist_xi_uj < max_dist)
+      max_dist = dist_xi_uj;
+      idx(i) = j;
+    end
+  end
+end
 
 % =============================================================
 
